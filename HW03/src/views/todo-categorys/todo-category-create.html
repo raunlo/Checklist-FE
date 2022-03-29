@@ -1,0 +1,23 @@
+<h1>Create</h1>
+
+<h4>Todo category</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group">
+            <label class="control-label" for="CategoryName">Category name</label>
+            <input value.bind="data.categoryName" class="form-control" type="text" />
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="CategorySort">Category sort</label>
+            <input value.bind="data.categorySort" class="form-control" />
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Save" class="btn btn-primary" click.delegate="saveChanges($event)" />
+        </div>
+    </div>
+</div>
+
+<div>
+    <a href="/todo-category-index">Back to List</a>
+</div>
