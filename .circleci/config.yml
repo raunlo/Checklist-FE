@@ -1,41 +1,36 @@
 version: 2.1
 orbs:
-   aws-s3: circleci/aws-s3@3.0
+  aws-s3: circleci/aws-s3@3.0
 jobs:
-  build:
+  install:
     docker:
       - image: circleci/node:14.18.1
-    parallelism: 1
-    working_directory: ~/rlohmus/vue
+    working_directory: ~/rlohmus/cvue
     steps:
       - checkout
       - attach_workspace:
           at: ~/rlohmus/vue
-      - run: npm install
-      - run: npm build
+      - run:
+          name: install deps
+          command: npm install
       - persist_to_workspace:
           root: .
           paths: [dist]
-  deploy:
-    docker:
-      - image: 'cimg/python:3.6'
-    steps:
-      - attach_workspace:
-          at: ~/rossta/connect-four-vue
-      - aws-s3/sync:
-          arguments: |
-            --acl public-read \
-            --cache-control "max-age=86400"
- #         aws-access-key-id: AWS_ACCESS_KEY_ID_BLUE
-  #        aws-region: AWS_REGION_BLUE
-   #       aws-secret-access-key: AWS_SECRET_ACCESS_KEY_BLUE
-          from: dist/
-          to: 's3://checklist-fe'
-
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   build-and-deploy:
     jobs:
-      - build
-      - deploy
+      - install
+      - aws-s3/sync:
+            arguments: |
+              --acl public-read \
+              --cache-control "max-age=86400"
+ #           aws-access-key-id: AWS_ACCESS_KEY_ID_BLUE
+  #          aws-region: AWS_REGION_BLUE
+   #         aws-secret-access-key: AWS_SECRET_ACCESS_KEY_BLUE
+            from: DIST
+            to: 's3://checklist-fe'
+            requires:
+              - install
+
