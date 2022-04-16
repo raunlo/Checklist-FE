@@ -21,7 +21,7 @@ jobs:
       - image: 'cimg/python:3.6'
     steps:
       - attach_workspace:
-          at: ~/rossta/connect-four-vue
+          at: ~/rlohmus/vue
       - aws-s3/sync:
           arguments: |
             --acl public-read \
