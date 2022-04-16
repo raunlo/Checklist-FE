@@ -22,7 +22,6 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/rlohmus/vue
-      - run: pwd
       - aws-s3/sync:
           arguments: |
             --acl public-read \
@@ -30,7 +29,7 @@ jobs:
  #         aws-access-key-id: AWS_ACCESS_KEY_ID_BLUE
   #        aws-region: AWS_REGION_BLUE
    #       aws-secret-access-key: AWS_SECRET_ACCESS_KEY_BLUE
-          from: ./dist/
+          from: ~/rlohmus/dist/
           to: 's3://checklist-fe'
 
 # Invoke jobs via workflows
