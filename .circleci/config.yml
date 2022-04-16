@@ -1,18 +1,45 @@
 version: 2.1
-
+orbs:
+   aws-s3: circleci/aws-s3@3.0
 jobs:
-  install:
+  build:
     docker:
-      - image: vuejs/ci
+      - image: circleci/node:14.18.1
+    parallelism: 1
+    working_directory: ~/rlohmus/vue
     steps:
       - checkout
-      - run:
-          name: install deps
-          command: npm install
+      - attach_workspace:
+          at: ~/rlohmus/vue
+      - run: npm install
+      - run: npm run-script build
+      - persist_to_workspace:
+          root: .
+          paths: [dist]
+  deploy:
+    docker:
+      - image: 'cimg/python:3.6'
+    steps:
+      - attach_workspace:
+          at: ~/rlohmus/vue
+      - aws-s3/sync:
+          arguments: |
+            --acl public-read \
+            --cache-control "max-age=86400"
+          from: /home/circleci/rlohmus/vue/dist
+          to: 's3://checklist-fe'
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  buiild-and-deploy:
+  build-and-deploy:
     jobs:
-      - install
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - main
+
