@@ -1,0 +1,18 @@
+version: 2.1
+
+jobs:
+  install:
+    docker:
+      - image: vuejs/ci
+    steps:
+      - checkout
+      - run:
+          name: install deps
+          command: npm install
+
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+workflows:
+  buiild-and-deploy:
+    jobs:
+      - install
