@@ -1,1 +1,0 @@
-export const ApiBaseUrl = "https://taltech.akaver.com/api/v1";
