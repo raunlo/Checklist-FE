@@ -26,9 +26,6 @@ jobs:
           arguments: |
             --acl public-read \
             --cache-control "max-age=86400"
- #         aws-access-key-id: AWS_ACCESS_KEY_ID_BLUE
-  #        aws-region: AWS_REGION_BLUE
-   #       aws-secret-access-key: AWS_SECRET_ACCESS_KEY_BLUE
           from: /home/circleci/rlohmus/vue/dist
           to: 's3://checklist-fe'
 
@@ -41,4 +38,8 @@ workflows:
       - deploy:
           requires:
             - build
+          filters:
+            branches:
+              only:
+                - main
 
