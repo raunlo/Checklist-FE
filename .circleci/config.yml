@@ -23,9 +23,6 @@ jobs:
       - attach_workspace:
           at: ~/rlohmus/vue
       - aws-s3/sync:
-          arguments: |
-            --acl public-read \
-            --cache-control "max-age=86400"
           from: /home/circleci/rlohmus/vue/dist/
           to: 's3://checklist-fe'
 
