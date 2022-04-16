@@ -26,7 +26,7 @@ jobs:
           arguments: |
             --acl public-read \
             --cache-control "max-age=86400"
-          from: /home/circleci/rlohmus/vue/dist
+          from: /home/circleci/rlohmus/vue/dist/
           to: 's3://checklist-fe'
 
 # Invoke jobs via workflows
