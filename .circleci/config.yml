@@ -12,7 +12,7 @@ jobs:
       - attach_workspace:
           at: ~/rlohmus/vue
       - run: npm install
-      - run: npm build
+      - run: npm run-script build
       - persist_to_workspace:
           root: .
           paths: [dist]
