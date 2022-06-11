@@ -16,7 +16,7 @@
             <thead>
                 <tr>
                     <th>
-                        <h6><b>Tasks</b></h6>
+                        <h6><b>Shopping List</b></h6>
                     </th>
                     <th class="alignright">
                         <button
@@ -42,13 +42,13 @@
                 </tr>
             </thead>
             <tbody>
-                <div v-if="items == null">
+                <div v-if="listitems == null">
                     <br />
                     <div class="spinner-border text-secondary" role="status">
                         <span class="sr-only">Loading...</span>
                     </div>
                 </div>
-                <tr v-for="(item, index) in items" :key="index">
+                <tr v-for="(item, index) in listitems" :key="index">
                     <td>
                         <input
                             v-model="item.completed"
@@ -59,7 +59,7 @@
                         <router-link
                             :to="'/listelement/edit/' + item.id"
                             class="link-dark"
-                            >{{ item.name }}</router-link
+                            >{{ item.description }}</router-link
                         >
                     </td>
                     <td class="alignright">
@@ -80,63 +80,64 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import { Task } from "@/domain/task";
-import { TaskService } from "@/services/task-service";
-import { TaskServiceName } from "@/constants/service-constants";
-import { inject } from "vue";
-import { FetchResponse } from "@/types/FetchResponse";
-import { useRoute } from "vue-router";
 
 @Options({
     components: {},
     props: {},
 })
-export default class TasksIndex extends Vue {
-    items: Task[] | null = null
-    checklistId: number = 0;
-    service: TaskService = inject(TaskServiceName) as TaskService
+export default class ChecklistIndex extends Vue {
+    listitems: Task[] | null = null;
 
-    async checkboxClicked(item: Task): Promise<void> {
-        // const objToSave: Task = {
-        //     id: item.id!,
-        //     description: item.description!,
-        //     completed: !item.completed,
-        // };
-        //
-        // this.service.put(item.id!, objToSave).then((statusCode) => {
-        //     if (statusCode.statusCode >= 200 && statusCode.statusCode < 300) {
-        //         this.$router.push("/");
-        //     }
-        // });
-    }
+    // get apiKey(): string {
+    //     return store.state.apiKey;
+    // }
 
-    async deleteClicked(id: number): Promise<void> {
-        this.service.delete(this.checklistId, id).then(() => {
-           this.items = this.items?.filter((item: Task) => item.id !== id) ?? []
-        });
-    }
-
-    async filterButtonClicked(queryParam: string): Promise<void> {
-        // const service = new BaseService<Task>(
-        //     "https://taltech.akaver.com/api/v1/ListItems",
-        //     "?apiKey=" + this.apiKey + queryParam
-        // );
-        // service.getAll().then((data) => {
-        //     this.listitems = data.data!;
-        // });
-    }
-
-    mounted(): void {
-        this.checklistId = Number(useRoute().params.id)
-        this.getAllTasks()
-    }
-
-    async getAllTasks(): Promise<void> {
-        this.service.getAll(this.checklistId)
-            .then((result: FetchResponse<Task[]>) => {
-                this.items = result.data!;
-            })
-        .catch(_ => { this.items = []; });
-    }
+    // async checkboxClicked(item: Task): Promise<void> {
+    //     const objToSave: Task = {
+    //         id: item.id!,
+    //         description: item.description!,
+    //         completed: !item.completed,
+    //     };
+    //     const service = new BaseService<Task>(
+    //         "https://taltech.akaver.com/api/v1/ListItems",
+    //         "?apiKey=" + this.apiKey
+    //     );
+    //     service.put(item.id!, objToSave).then((statusCode) => {
+    //         if (statusCode.statusCode >= 200 && statusCode.statusCode < 300) {
+    //             this.$router.push("/");
+    //         }
+    //     });
+    // }
+    //
+    // async deleteClicked(id: string): Promise<void> {
+    //     const service = new BaseService<Task>(
+    //         "https://taltech.akaver.com/api/v1/ListItems",
+    //         "?apiKey=" + this.apiKey
+    //     );
+    //     service.delete(id).then(() => {
+    //         window.location.reload();
+    //     });
+    // }
+    //
+    // async filterButtonClicked(queryParam: string): Promise<void> {
+    //     const service = new BaseService<Task>(
+    //         "https://taltech.akaver.com/api/v1/ListItems",
+    //         "?apiKey=" + this.apiKey + queryParam
+    //     );
+    //     service.getAll().then((data) => {
+    //         this.listitems = data.data!;
+    //     });
+    // }
+    //
+    // mounted(): void {
+    //     const service = new BaseService<Task>(
+    //         "https://taltech.akaver.com/api/v1/ListItems",
+    //         "?apiKey=" + this.apiKey
+    //     );
+    //     service.getAll().then((data) => {
+    //         this.listitems = data.data!;
+    //     });
+    // }
 }
 </script>
 

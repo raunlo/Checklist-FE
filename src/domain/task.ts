@@ -1,5 +1,5 @@
-export interface IListItem {
-    id?: string;
+export interface Task {
+    id?: number;
     description: string;
     completed: boolean;
 }

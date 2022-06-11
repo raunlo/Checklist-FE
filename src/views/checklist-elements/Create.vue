@@ -43,37 +43,38 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import store from "@/store/index";
 import { Task } from "@/domain/task";
+import {ChecklistServiceName, TaskServiceName} from "@/constants/service-constants";
+import { ChecklistService } from "@/services/checklist-service";
+import {inject} from "vue";
+import {TaskService} from "@/services/task-service";
 
 @Options({
     components: {},
-    props: {},
+    props: {}
 })
-export default class TaskCreate extends Vue {
+export default class ListItemCreate extends Vue {
     description: string | null = null;
     completed: boolean = false;
 
-    get apiKey(): string {
-        return store.state.apiKey;
+    setup() {
+        return {
+            Store: inject(TaskServiceName) as TaskService,
+        }
     }
 
-    // async saveClicked(): Promise<void> {
-    //     const objToSave: Task = {
-    //         description: this.description!,
-    //         completed: this.completed,
-    //     };
-    //     const service = new BaseService<Task>(
-    //         "https://taltech.akaver.com/api/v1/ListItems",
-    //         "?apiKey=" + this.apiKey
-    //     );
-    //     service.post(objToSave).then((statusCode) => {
-    //         if (statusCode.statusCode >= 200 && statusCode.statusCode < 300) {
-    //             this.$router.push("/");
-    //         } else {
-    //             alert("Wrong input!");
-    //         }
-    //     });
-    // }
+    async saveClicked(): Promise<void> {
+        const objToSave: Task = {
+            description: this.description!,
+            completed: this.completed,
+        };
+        this.Store.post(objToSave).then((statusCode) => {
+            if (statusCode.statusCode >= 200 && statusCode.statusCode < 300) {
+                this.$router.push("/");
+            } else {
+                alert("Wrong input!");
+            }
+        });
+    }
 }
 </script>

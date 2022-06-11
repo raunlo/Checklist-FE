@@ -1,4 +1,4 @@
-export interface IFetchResponse<TData> {
+export interface FetchResponse<TData> {
     statusCode: number;
     errorMessage?: string;
     data?: TData;

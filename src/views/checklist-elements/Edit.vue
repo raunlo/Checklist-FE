@@ -29,8 +29,8 @@
                         >Completed *</label
                     >&nbsp;
                     <input
-                        type="checkbox"
                         id="completed"
+                        type="checkbox"
                         class="form-check-input"
                         v-model="completed"
                     />
@@ -57,6 +57,9 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
+import store from "@/store/index";
+import { BaseService } from "@/services/base-service";
+import { Task } from "@/domain/task";
 
 @Options({
     components: {},
@@ -64,39 +67,43 @@ import { Options, Vue } from "vue-class-component";
         id: String,
     },
 })
-export default class EditTask extends Vue {
+export default class ListItemCreate extends Vue {
     description: string | null = null;
     completed: boolean = false;
-    id!: number;
+    id!: string;
 
-    // get apiKey(): string {
-    //     return store.state.apiKey;
-    // }
-    //
-    // async saveClicked(): Promise<void> {
-    //     const objToSave: Task = {
-    //         id: this.id!,
-    //         description: this.description!,
-    //         completed: this.completed,
-    //     };
-    //     service.put(this.id, objToSave).then((statusCode) => {
-    //         if (statusCode.statusCode >= 200 && statusCode.statusCode < 300) {
-    //             this.$router.push("/");
-    //         } else {
-    //             alert("Wrong input!");
-    //         }
-    //     });
-    // }
-    //
-    // mounted(): void {
-    //     const service = new BaseService<Task>(
-    //         "https://taltech.akaver.com/api/v1/ListItems",
-    //         "?apiKey=" + this.apiKey
-    //     );
-    //     service.get(this.id).then((data) => {
-    //         this.description = data.data!.description;
-    //         this.completed = data.data!.completed;
-    //     });
-    // }
+    get apiKey(): string {
+        return store.state.apiKey;
+    }
+
+    async saveClicked(): Promise<void> {
+        const objToSave: Task = {
+            id: this.id!,
+            description: this.description!,
+            completed: this.completed,
+        };
+        const service = new BaseService<Task>(
+            "https://taltech.akaver.com/api/v1/ListItems",
+            "?apiKey=" + this.apiKey
+        );
+        service.put(this.id, objToSave).then((statusCode) => {
+            if (statusCode.statusCode >= 200 && statusCode.statusCode < 300) {
+                this.$router.push("/");
+            } else {
+                alert("Wrong input!");
+            }
+        });
+    }
+
+    mounted(): void {
+        const service = new BaseService<Task>(
+            "https://taltech.akaver.com/api/v1/ListItems",
+            "?apiKey=" + this.apiKey
+        );
+        service.get(this.id).then((data) => {
+            this.description = data.data!.description;
+            this.completed = data.data!.completed;
+        });
+    }
 }
 </script>
