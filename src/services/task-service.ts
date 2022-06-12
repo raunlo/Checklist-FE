@@ -9,7 +9,7 @@ export class TaskService {
 
     async getAll(checklistId: number): Promise<FetchResponse<Task[]>> {
         try {
-            const response = await axios.get(`${this.basePath}/v1/checklist/${checklistId}/tasks`, { headers: ApplicationJsonHeaders });
+            const response = await axios.get(`${this.basePath}/v1/checklist/${checklistId}/task`, { headers: ApplicationJsonHeaders });
             if (response.status >= 200 && response.status < 300) {
                 return {
                     statusCode: response.status,
@@ -30,7 +30,7 @@ export class TaskService {
 
     async delete(checklistId: number, taskId: number) : Promise<FetchResponse<void>> {
         try {
-            const response = await axios.delete(`${this.basePath}/v1/checklist/${checklistId}/tasks/${taskId}`, { headers: ApplicationJsonHeaders });
+            const response = await axios.delete(`${this.basePath}/v1/checklist/${checklistId}/task/${taskId}`, { headers: ApplicationJsonHeaders });
             if (response.status >= 200 && response.status < 300) {
                 return {
                     statusCode: response.status,
