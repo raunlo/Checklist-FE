@@ -18,7 +18,7 @@
         </div>
 
         <footer class="border-top footer text-muted">
-            <div class="container">&copy; 2021 - DCT</div>
+            <div class="container">&copy; 2022 - DCT/RL</div>
         </footer>
     </div>
 </template>
