@@ -5,7 +5,7 @@ orbs:
 jobs:
   build:
     docker:
-      - image: circleci/node:14.18.1
+      - image: cimg/node:14.18.1
     parallelism: 1
     working_directory: ~/rlohmus/vue
     steps:
@@ -13,6 +13,11 @@ jobs:
       - attach_workspace:
           at: ~/rlohmus/vue
       - run: npm install
+      - run:
+          name: Creating .env file
+          command: |
+            echo "VUE_APP_BASE_PATH=$REST_URL" > .env
+            cat .env
       - run: npm run-script build
       - persist_to_workspace:
           root: .
@@ -27,36 +32,21 @@ jobs:
           from: /home/circleci/rlohmus/vue/dist/
           to: 's3://checklist-fe'
 
-  deploy-heroku:
-    executor: heroku/default
-    steps:
-      - checkout
-      - heroku/install
-      - setup_remote_docker:
-          version: 20.10.14
-      - run:
-          name: Pushing to heroku registry
-          command: |
-            heroku container:login
-            heroku container:push web -a  $HEROKU_APP_NAME
-            heroku container:release web -a $HEROKU_APP_NAME
-
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  #build-and-deploy:
-  #  jobs:
-   #   - build
-    #  - deploy:
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+          - build
      #     requires:
       #      - build
       #    filters:
        #     branches:
         #      only:
          #       - master
-  deploy-to-heroku:
-    jobs:
-      - deploy-heroku
 
 
