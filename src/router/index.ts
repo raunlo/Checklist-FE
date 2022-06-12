@@ -1,17 +1,47 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, RouteLocationRaw, RouteParamsRaw, RouteRecordRaw } from 'vue-router'
 
-import ListElementCreate from '../views/list-elements/Create.vue';
-import ListElementEdit from '../views/list-elements/Edit.vue';
 import ChecklistIndex from "@/views/checklist-elements/Index.vue";
 import TasksIndex from "@/views/list-elements/Index.vue";
-
+import TaskCreate from "@/views/list-elements/Create.vue";
+const checklistTaskDetailsRouteName = 'checklist task details'
+const checklistTasksRouteName = 'checklist tasks'
+const checklistsRouteName = "checklists"
 const routes: Array<RouteRecordRaw> = [
-    { path: '/', name: 'checklist', component: ChecklistIndex, },
-    { path: '/checklist/create', name: 'listelement-create', component: ListElementCreate, },
-    { path: '/checklist/edit/:id', name: 'listelement-edit', component: ListElementEdit, props: true },
-    { path: '/checklist/:id/task', name: 'checklist tasks', component: TasksIndex, props: true },
+    { path: '/', name: checklistsRouteName, component: ChecklistIndex, },
+    { path: '/checklist/:checklistId', name: checklistTasksRouteName, component: TasksIndex, props: true },
+    { path: '/checklist/:checklistId/task/:taskId?', name: checklistTaskDetailsRouteName, component: TaskCreate, props: true },
 
 ]
+
+export const getChecklistTaskDetailsRoute = (checklistId: number, taskId?: number): RouteLocationRaw => {
+    let routeParams: RouteParamsRaw = { checklistId };
+    if (taskId) {
+        routeParams = {
+            ...routeParams,
+            taskId
+        }
+    }
+
+    return {
+        name: checklistTaskDetailsRouteName,
+        params: routeParams
+    }
+}
+
+export const getChecklistTasksRoute = (checklistId: number): RouteLocationRaw => {
+    return {
+        name: checklistTasksRouteName,
+        params: {
+            checklistId,
+        }
+    }
+}
+
+export const getChecklistsRoute = () => {
+    return {
+        name: checklistsRouteName
+    }
+}
 
 const router = createRouter({
     history: createWebHistory(process.env.BASE_URL),

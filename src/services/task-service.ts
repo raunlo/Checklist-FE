@@ -28,6 +28,27 @@ export class TaskService {
         }
     }
 
+    async get(checklistId: number, taskId: number): Promise<FetchResponse<Task>> {
+        try {
+            const response = await axios.get(`${this.basePath}/v1/checklist/${checklistId}/task/${taskId}`, { headers: ApplicationJsonHeaders });
+            if (response.status >= 200 && response.status < 300) {
+                return {
+                    statusCode: response.status,
+                    data: response.data as Task,
+                };
+            }
+            return {
+                statusCode: response.status,
+                errorMessage: response.statusText,
+            };
+        } catch (reason) {
+            return {
+                statusCode: 500,
+                errorMessage: JSON.stringify(reason),
+            };
+        }
+    }
+
     async delete(checklistId: number, taskId: number) : Promise<FetchResponse<void>> {
         try {
             const response = await axios.delete(`${this.basePath}/v1/checklist/${checklistId}/task/${taskId}`, { headers: ApplicationJsonHeaders });
@@ -35,6 +56,48 @@ export class TaskService {
                 return {
                     statusCode: response.status,
                     data: undefined
+                };
+            }
+            return {
+                statusCode: response.status,
+                errorMessage: response.statusText,
+            };
+        } catch (reason) {
+            return {
+                statusCode: 500,
+                errorMessage: JSON.stringify(reason),
+            };
+        }
+    }
+
+    async update(checklistId: number, task: Task): Promise<FetchResponse<Task>> {
+        try {
+            const response = await axios.put(`${this.basePath}/v1/checklist/${checklistId}/task`, task, { headers: ApplicationJsonHeaders });
+            if (response.status >= 200 && response.status < 300) {
+                return {
+                    statusCode: response.status,
+                    data: response.data as Task
+                };
+            }
+            return {
+                statusCode: response.status,
+                errorMessage: response.statusText,
+            };
+        } catch (reason) {
+            return {
+                statusCode: 500,
+                errorMessage: JSON.stringify(reason),
+            };
+        }
+    }
+
+    async post(checklistId: number, task: Task): Promise<FetchResponse<Task>> {
+        try {
+            const response = await axios.post(`${this.basePath}/v1/checklist/${checklistId}/task`, task, { headers: ApplicationJsonHeaders });
+            if (response.status >= 200 && response.status < 300) {
+                return {
+                    statusCode: response.status,
+                    data: response.data as Task
                 };
             }
             return {

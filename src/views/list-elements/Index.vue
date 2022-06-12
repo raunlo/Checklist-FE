@@ -4,7 +4,7 @@
             <br />
             <div class="form-group">
                 <router-link
-                    :to="'/listelement/create'"
+                    :to="createTaskRoute"
                     class="btn btn-dark"
                     role="button"
                     >Create new item</router-link
@@ -48,7 +48,7 @@
                         <span class="sr-only">Loading...</span>
                     </div>
                 </div>
-                <tr v-for="(item, index) in items" :key="index">
+                <tr v-for="(item, index) in items" :key="index" v-bind:class="{completed: item.completed}">
                     <td>
                         <input
                             v-model="item.completed"
@@ -57,7 +57,7 @@
                             @click="checkboxClicked(item)"
                         /> &nbsp;&nbsp;
                         <router-link
-                            :to="'/listelement/edit/' + item.id"
+                            :to="getTaskRoute(item.id)"
                             class="link-dark"
                             >{{ item.name }}</router-link
                         >
@@ -84,7 +84,8 @@ import { TaskService } from "@/services/task-service";
 import { TaskServiceName } from "@/constants/service-constants";
 import { inject } from "vue";
 import { FetchResponse } from "@/types/FetchResponse";
-import { useRoute } from "vue-router";
+import { RouteLocationRaw, useRoute } from "vue-router";
+import { getChecklistTaskDetailsRoute } from "@/router";
 
 @Options({
     components: {},
@@ -92,50 +93,39 @@ import { useRoute } from "vue-router";
 })
 export default class TasksIndex extends Vue {
     items: Task[] | null = null
-    checklistId: number = 0;
+    checklistId: number = Number(useRoute().params.checklistId)
     service: TaskService = inject(TaskServiceName) as TaskService
+    createTaskRoute: any = getChecklistTaskDetailsRoute(this.checklistId)
 
     async checkboxClicked(item: Task): Promise<void> {
-        // const objToSave: Task = {
-        //     id: item.id!,
-        //     description: item.description!,
-        //     completed: !item.completed,
-        // };
-        //
-        // this.service.put(item.id!, objToSave).then((statusCode) => {
-        //     if (statusCode.statusCode >= 200 && statusCode.statusCode < 300) {
-        //         this.$router.push("/");
-        //     }
-        // });
+        const objToSave: Task = {
+            ...item,
+            completed: !item.completed
+        };
+
+        await this.service.update(this.checklistId, objToSave)
     }
 
     async deleteClicked(id: number): Promise<void> {
         this.service.delete(this.checklistId, id).then(() => {
-           this.items = this.items?.filter((item: Task) => item.id !== id) ?? []
+            this.items = this.items?.filter((item: Task) => item.id !== id) ?? []
         });
     }
 
-    async filterButtonClicked(queryParam: string): Promise<void> {
-        // const service = new BaseService<Task>(
-        //     "https://taltech.akaver.com/api/v1/ListItems",
-        //     "?apiKey=" + this.apiKey + queryParam
-        // );
-        // service.getAll().then((data) => {
-        //     this.listitems = data.data!;
-        // });
-    }
+    // async filterButtonClicked(queryParam: string): Promise<void> {}
 
     mounted(): void {
-        this.checklistId = Number(useRoute().params.id)
         this.getAllTasks()
     }
+
+    getTaskRoute(taskId: number): RouteLocationRaw { return getChecklistTaskDetailsRoute(this.checklistId, taskId) }
 
     async getAllTasks(): Promise<void> {
         this.service.getAll(this.checklistId)
             .then((result: FetchResponse<Task[]>) => {
                 this.items = result.data!;
             })
-        .catch(_ => { this.items = []; });
+            .catch(_ => { this.items = []; });
     }
 }
 </script>
@@ -148,5 +138,9 @@ export default class TasksIndex extends Vue {
 
 .alignright {
     text-align: right;
+}
+
+.completed {
+    text-decoration: line-through;
 }
 </style>

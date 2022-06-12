@@ -10,7 +10,8 @@
                     >Description *</label
                 >
                 <input
-                    v-model="description"
+                    id="description"
+                    v-model="task.name"
                     class="form-control"
                     type="text"
                 />
@@ -20,11 +21,12 @@
                 <label class="control-label" for="completed"
                     >Completed *</label
                 >&nbsp;
-                <input type="checkbox" class="form-check-input" v-model="completed" />
+                <input type="checkbox" class="form-check-input" v-model="task.completed" />
             </div>
             <br />
             <div class="form-group">
                 <input
+                    id="completed"
                     type="submit"
                     value="Save"
                     class="btn btn-dark"
@@ -43,37 +45,49 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import store from "@/store/index";
+import { NavigationFailure, useRoute } from "vue-router";
 import { Task } from "@/domain/task";
+import { TaskService } from "@/services/task-service";
+import { inject } from "vue";
+import { TaskServiceName } from "@/constants/service-constants";
+import { getChecklistTasksRoute } from "@/router";
 
 @Options({
     components: {},
     props: {},
 })
 export default class TaskCreate extends Vue {
-    description: string | null = null;
-    completed: boolean = false;
-
-    get apiKey(): string {
-        return store.state.apiKey;
+    task: Task = {
+        name: "",
+        completed: false
     }
 
-    // async saveClicked(): Promise<void> {
-    //     const objToSave: Task = {
-    //         description: this.description!,
-    //         completed: this.completed,
-    //     };
-    //     const service = new BaseService<Task>(
-    //         "https://taltech.akaver.com/api/v1/ListItems",
-    //         "?apiKey=" + this.apiKey
-    //     );
-    //     service.post(objToSave).then((statusCode) => {
-    //         if (statusCode.statusCode >= 200 && statusCode.statusCode < 300) {
-    //             this.$router.push("/");
-    //         } else {
-    //             alert("Wrong input!");
-    //         }
-    //     });
-    // }
+    checklistId: number | null = null;
+    service : TaskService = inject(TaskServiceName) as TaskService;
+    router = useRoute();
+
+    async saveClicked(): Promise<void| NavigationFailure> {
+        let taskPromise;
+        if (this.task.id) {
+            taskPromise = this.service.update(this.checklistId!, this.task)
+        } else {
+            taskPromise = this.service.post(this.checklistId!, this.task);
+        }
+        return taskPromise.then(() => {
+            this.$router.push(getChecklistTasksRoute(this.checklistId!))
+        })
+    }
+
+    mounted (): void {
+        this.checklistId = Number(this.router.params.checklistId)
+        console.log(this.checklistId)
+        const taskId = Number(this.router.params.taskId)
+        if (taskId) {
+            this.service.get(this.checklistId, taskId)
+                .then(r => {
+                    this.task = r.data as Task;
+                })
+        }
+    }
 }
 </script>
