@@ -9,7 +9,7 @@ const routes: Array<RouteRecordRaw> = [
     { path: '/', name: 'checklist', component: ChecklistIndex, },
     { path: '/checklist/create', name: 'listelement-create', component: ListElementCreate, },
     { path: '/checklist/edit/:id', name: 'listelement-edit', component: ListElementEdit, props: true },
-    { path: '/checklist/:id/tasks', name: 'checklist tasks', component: TasksIndex, props: true },
+    { path: '/checklist/:id/task', name: 'checklist tasks', component: TasksIndex, props: true },
 
 ]
 
