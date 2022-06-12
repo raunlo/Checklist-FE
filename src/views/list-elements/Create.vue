@@ -35,7 +35,7 @@
             </div>
             <br />
             <div>
-                <router-link to="/" class="link-secondary"
+                <router-link :to="checklistTasksRoute" class="link-secondary"
                     >Back to List</router-link
                 >
             </div>
@@ -62,9 +62,10 @@ export default class TaskCreate extends Vue {
         completed: false
     }
 
-    checklistId: number | null = null;
     service : TaskService = inject(TaskServiceName) as TaskService;
     router = useRoute();
+    checklistId: number = Number(this.router.params.checklistId)
+    checklistTasksRoute = getChecklistTasksRoute(this.checklistId)
 
     async saveClicked(): Promise<void| NavigationFailure> {
         let taskPromise;
@@ -79,8 +80,6 @@ export default class TaskCreate extends Vue {
     }
 
     mounted (): void {
-        this.checklistId = Number(this.router.params.checklistId)
-        console.log(this.checklistId)
         const taskId = Number(this.router.params.taskId)
         if (taskId) {
             this.service.get(this.checklistId, taskId)
