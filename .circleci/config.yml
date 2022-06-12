@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
    aws-s3: circleci/aws-s3@3.0
+   heroku: circleci/heroku@1.0.1
 jobs:
   build:
     docker:
@@ -26,17 +27,36 @@ jobs:
           from: /home/circleci/rlohmus/vue/dist/
           to: 's3://checklist-fe'
 
+  deploy-heroku:
+    executor: heroku/default
+    steps:
+      - checkout
+      - heroku/install
+      - setup_remote_docker:
+          version: 20.10.14
+      - run:
+          name: Pushing to heroku registry
+          command: |
+            heroku container:login
+            heroku container:push web -a  $HEROKU_APP_NAME
+            heroku container:release web -a $HEROKU_APP_NAME
+
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  build-and-deploy:
+  #build-and-deploy:
+  #  jobs:
+   #   - build
+    #  - deploy:
+     #     requires:
+      #      - build
+      #    filters:
+       #     branches:
+        #      only:
+         #       - master
+  deploy-to-heroku:
     jobs:
-      - build
-      - deploy:
-          requires:
-            - build
-          filters:
-            branches:
-              only:
-                - master
+      - deploy-heroku
+
 
