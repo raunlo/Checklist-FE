@@ -63,7 +63,7 @@ export default class TaskCreate extends Vue {
     }
 
     taskId : number = 0;
-    timer = setInterval(this.getTasks, 100);
+    timer = setInterval(() => this.getTasks, 3000);
 
     service : TaskService = inject(TaskServiceName) as TaskService;
     router = useRoute();
