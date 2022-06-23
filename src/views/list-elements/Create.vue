@@ -62,6 +62,9 @@ export default class TaskCreate extends Vue {
         completed: false
     }
 
+    taskId : number = 0;
+    timer = setInterval(this.getTasks, 100);
+
     service : TaskService = inject(TaskServiceName) as TaskService;
     router = useRoute();
     checklistId: number = Number(this.router.params.checklistId)
@@ -79,10 +82,17 @@ export default class TaskCreate extends Vue {
         })
     }
 
-    mounted (): void {
-        const taskId = Number(this.router.params.taskId)
-        if (taskId) {
-            this.service.get(this.checklistId, taskId)
+    created (): void {
+        this.taskId = Number(this.router.params.taskId)
+    }
+
+    beforeUnmount(): void {
+        clearInterval(this.timer)
+    }
+
+    async getTasks(): Promise<void> {
+        if (this.taskId) {
+            return this.service.get(this.checklistId, this.taskId)
                 .then(r => {
                     this.task = r.data as Task;
                 })
