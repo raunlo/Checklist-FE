@@ -44,7 +44,7 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { Vue } from "vue-class-component";
 import { NavigationFailure, useRoute } from "vue-router";
 import { Task } from "@/domain/task";
 import { TaskService } from "@/services/task-service";
@@ -52,10 +52,6 @@ import { inject } from "vue";
 import { TaskServiceName } from "@/constants/service-constants";
 import { getChecklistTasksRoute } from "@/router";
 
-@Options({
-    components: {},
-    props: {},
-})
 export default class TaskCreate extends Vue {
     task: Task = {
         name: "",

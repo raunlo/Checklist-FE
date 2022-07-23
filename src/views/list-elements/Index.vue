@@ -41,38 +41,34 @@
                     <th></th>
                 </tr>
             </thead>
-            <tbody>
-                <div v-if="items == null">
-                    <br />
-                    <div class="spinner-border text-secondary" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>
-                <tr v-for="(item, index) in items" :key="index" v-bind:class="{completed: item.completed}">
-                    <td>
-                        <input
-                            v-model="item.completed"
-                            class="custom-checkbox"
-                            type="checkbox"
-                            @click="checkboxClicked(item)"
-                        /> &nbsp;&nbsp;
-                        <router-link
-                            :to="getTaskRoute(item.id)"
-                            class="link-dark"
-                            >{{ item.name }}</router-link
-                        >
-                    </td>
-                    <td class="alignright">
-                        <input
-                            type="image"
-                            src="https://img.favpng.com/13/25/7/computer-icons-png-favpng-LSJt9i7RPhEkvdNs4btbaNcj5.jpg"
-                            class="icon"
-                            @click="deleteClicked(item.id)"
-                        />
-                    </td>
-                    <td></td>
-                </tr>
-            </tbody>
+                <draggable v-model="items" tag="tbody" item-key="id">
+                    <template  #item="{ element }">
+                        <tr v-bind:class="{completed: element.completed}">
+                            <td>
+                                <input
+                                    v-model="element.completed"
+                                    class="custom-checkbox"
+                                    type="checkbox"
+                                    @click="checkboxClicked(element)"
+                                /> &nbsp;&nbsp;
+                                <router-link
+                                    :to="getTaskRoute(element.id)"
+                                    class="link-dark"
+                                >{{ element.name }}</router-link
+                                >
+                            </td>
+                            <td class="alignright">
+                                <input
+                                    type="image"
+                                    src="https://img.favpng.com/13/25/7/computer-icons-png-favpng-LSJt9i7RPhEkvdNs4btbaNcj5.jpg"
+                                    class="icon"
+                                    @click="deleteClicked(element.id)"
+                                />
+                            </td>
+                            <td></td>
+                        </tr>
+                    </template>
+                </draggable>
         </table>
     </div>
 </template>
@@ -86,17 +82,17 @@ import { inject } from "vue";
 import { FetchResponse } from "@/types/FetchResponse";
 import { RouteLocationRaw, useRoute } from "vue-router";
 import { getChecklistTaskDetailsRoute } from "@/router";
+import draggable from 'vuedraggable'
 
 @Options({
-    components: {},
-    props: {},
+    components: { draggable },
 })
 export default class TasksIndex extends Vue {
     items: Task[] | null = null
     checklistId: number = Number(useRoute().params.checklistId)
     service: TaskService = inject(TaskServiceName) as TaskService
     createTaskRoute: any = getChecklistTaskDetailsRoute(this.checklistId)
-    timer = setInterval(() => this.getAllTasks(), 3000)
+   // timer = setInterval(() => this.getAllTasks(), 3000)
 
     async checkboxClicked(item: Task): Promise<void> {
         const objToSave: Task = {
@@ -126,11 +122,13 @@ export default class TasksIndex extends Vue {
             .then((result: FetchResponse<Task[]>) => {
                 this.items = result.data!;
             })
-            .catch(() => { this.items = []; });
+            .catch(() => {
+                this.items = [];
+            });
     }
 
     beforeUnmount(): void {
-        clearInterval(this.timer)
+       // clearInterval(this.timer)
     }
 }
 </script>
@@ -147,5 +145,10 @@ export default class TasksIndex extends Vue {
 
 .completed {
     text-decoration: line-through;
+}
+.handle {
+    float: left;
+    padding-top: 8px;
+    padding-bottom: 20px;
 }
 </style>

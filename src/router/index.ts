@@ -1,4 +1,11 @@
-import { createRouter, createWebHistory, RouteLocationRaw, RouteParamsRaw, RouteRecordRaw } from 'vue-router'
+import {
+    createRouter,
+    createWebHistory,
+    LocationAsRelativeRaw,
+    RouteLocationRaw,
+    RouteParamsRaw,
+    RouteRecordRaw
+} from 'vue-router'
 
 import ChecklistIndex from "@/views/checklist-elements/Index.vue";
 import TasksIndex from "@/views/list-elements/Index.vue";
