@@ -96,6 +96,7 @@ export default class TasksIndex extends Vue {
     checklistId: number = Number(useRoute().params.checklistId)
     service: TaskService = inject(TaskServiceName) as TaskService
     createTaskRoute: any = getChecklistTaskDetailsRoute(this.checklistId)
+    timer = setInterval(() => this.getAllTasks(), 3000)
 
     async checkboxClicked(item: Task): Promise<void> {
         const objToSave: Task = {
@@ -125,7 +126,11 @@ export default class TasksIndex extends Vue {
             .then((result: FetchResponse<Task[]>) => {
                 this.items = result.data!;
             })
-            .catch(_ => { this.items = []; });
+            .catch(() => { this.items = []; });
+    }
+
+    beforeUnmount(): void {
+        clearInterval(this.timer)
     }
 }
 </script>
