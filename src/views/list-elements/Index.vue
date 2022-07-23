@@ -41,6 +41,12 @@
                     <th></th>
                 </tr>
             </thead>
+            <div v-if="items == null">
+                <br />
+                <div class="spinner-border text-secondary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
                 <draggable v-model="items" tag="tbody" item-key="id">
                     <template  #item="{ element }">
                         <tr v-bind:class="{completed: element.completed}">
