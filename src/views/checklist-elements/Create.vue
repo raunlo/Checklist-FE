@@ -44,10 +44,10 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import { Task } from "@/domain/task";
-import {ChecklistServiceName, TaskServiceName} from "@/constants/service-constants";
+import { ChecklistServiceName, TaskServiceName } from "@/constants/service-constants";
 import { ChecklistService } from "@/services/checklist-service";
-import {inject} from "vue";
-import {TaskService} from "@/services/task-service";
+import { inject } from "vue";
+import { TaskService } from "@/services/task-service";
 
 @Options({
     components: {},

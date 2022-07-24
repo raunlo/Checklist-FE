@@ -12,9 +12,9 @@ module.exports = {
         ecmaVersion: 2020
     },
     rules: {
-        'indent': ["warn", 4],
-        'quotes': 'off',
-        'semi': 'off',
+        indent: ["warn", 4],
+        quotes: 'off',
+        semi: 'off',
         "comma-dangle": 'off',
         'space-before-function-paren': 'off',
         '@typescript-eslint/no-explicit-any': 'off',

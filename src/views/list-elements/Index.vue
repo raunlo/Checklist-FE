@@ -1,80 +1,84 @@
 <template>
     <div>
         <div>
-            <br />
+            <br/>
             <div class="form-group">
                 <router-link
                     :to="createTaskRoute"
                     class="btn btn-dark"
                     role="button"
-                    >Create new item</router-link
+                >Create new item
+                </router-link
                 >
             </div>
-            <br />
+            <br/>
         </div>
         <table class="table">
             <thead>
-                <tr>
-                    <th>
-                        <h6><b>Tasks</b></h6>
-                    </th>
-                    <th class="alignright">
-                        <button
-                            class="btn btn-outline-dark btn-sm"
-                            @click="filterButtonClicked('')"
-                        >
-                            All</button
-                        >&nbsp;
-                        <button
-                            class="btn btn-outline-dark btn-sm"
-                            @click="filterButtonClicked('&completed=false')"
-                        >
-                            Uncompleted</button
-                        >&nbsp;
-                        <button
-                            class="btn btn-outline-dark btn-sm"
-                            @click="filterButtonClicked('&completed=true')"
-                        >
-                            Completed
-                        </button>
-                    </th>
-                    <th></th>
-                </tr>
+            <tr>
+                <th>
+                    <h6><b>Tasks</b></h6>
+                </th>
+                <th class="alignright">
+                    <button
+                        class="btn btn-outline-dark btn-sm"
+                        @click="filterButtonClicked('')"
+                    >
+                        All
+                    </button
+                    >&nbsp;
+                    <button
+                        class="btn btn-outline-dark btn-sm"
+                        @click="filterButtonClicked('&completed=false')"
+                    >
+                        Uncompleted
+                    </button
+                    >&nbsp;
+                    <button
+                        class="btn btn-outline-dark btn-sm"
+                        @click="filterButtonClicked('&completed=true')"
+                    >
+                        Completed
+                    </button>
+                </th>
+                <th></th>
+            </tr>
             </thead>
             <div v-if="items == null">
-                <br />
+                <br/>
                 <div class="spinner-border text-secondary" role="status">
                     <span class="sr-only">Loading...</span>
                 </div>
             </div>
-                <draggable v-model="items" tag="tbody" item-key="id">
-                    <template  #item="{ element }">
-                        <tr v-bind:class="{completed: element.completed}">
-                            <td>
-                                <input
-                                    v-model="element.completed"
-                                    class="custom-checkbox"
-                                    type="checkbox"
-                                    @click="checkboxClicked(element)"
-                                /> &nbsp;&nbsp;
-                                <router-link
-                                    :to="getTaskRoute(element.id)"
-                                    class="link-dark"
-                                >{{ element.name }}</router-link
-                                >
-                            </td>
-                            <td class="alignright">
-                                <input
-                                    type="image"
-                                    src="https://img.favpng.com/13/25/7/computer-icons-png-favpng-LSJt9i7RPhEkvdNs4btbaNcj5.jpg"
-                                    class="icon"
-                                    @click="deleteClicked(element.id)"
-                                />
-                            </td>
-                            <td></td>
-                        </tr>
-                    </template>
-                </draggable>
+            <draggable v-model="items" tag="tbody" item-key="id" @change="changeOrder($event)">
+                <template #item="{ element }">
+                    <tr v-bind:class="{completed: element.completed}">
+                        <td>
+                            <input
+                                v-model="element.completed"
+                                class="custom-checkbox"
+                                type="checkbox"
+                                @click="checkboxClicked(element)"
+                            /> &nbsp;&nbsp;
+                            <router-link
+                                :to="getTaskRoute(element.id)"
+                                class="link-dark"
+                            >{{ element.name }}
+                            </router-link
+                            >
+                        </td>
+                        <td class="alignright">
+                            <input
+                                type="image"
+                                src="https://img.favpng.com/13/25/7/computer-icons-png-favpng-LSJt9i7RPhEkvdNs4btbaNcj5.jpg"
+                                class="icon"
+                                @click="deleteClicked(element.id)"
+                            />
+                        </td>
+                        <td></td>
+                    </tr>
+                </template>
+            </draggable>
         </table>
     </div>
 </template>
@@ -98,12 +102,12 @@ export default class TasksIndex extends Vue {
     checklistId: number = Number(useRoute().params.checklistId)
     service: TaskService = inject(TaskServiceName) as TaskService
     createTaskRoute: any = getChecklistTaskDetailsRoute(this.checklistId)
-   // timer = setInterval(() => this.getAllTasks(), 3000)
+    timer = setInterval(() => this.getAllTasks(), 6000)
 
     async checkboxClicked(item: Task): Promise<void> {
         const objToSave: Task = {
             ...item,
-            completed: !item.completed
+            completed: !item.completed,
         };
 
         await this.service.update(this.checklistId, objToSave)
@@ -115,13 +119,13 @@ export default class TasksIndex extends Vue {
         });
     }
 
-    // async filterButtonClicked(queryParam: string): Promise<void> {}
-
     mounted(): void {
         this.getAllTasks()
     }
 
-    getTaskRoute(taskId: number): RouteLocationRaw { return getChecklistTaskDetailsRoute(this.checklistId, taskId) }
+    getTaskRoute(taskId: number): RouteLocationRaw {
+        return getChecklistTaskDetailsRoute(this.checklistId, taskId)
+    }
 
     async getAllTasks(): Promise<void> {
         this.service.getAll(this.checklistId)
@@ -134,7 +138,17 @@ export default class TasksIndex extends Vue {
     }
 
     beforeUnmount(): void {
-       // clearInterval(this.timer)
+        clearInterval(this.timer)
+    }
+
+    async changeOrder(changeOrderEvent: any): Promise<void> {
+        const oldIndex = changeOrderEvent.moved.oldIndex + 1
+        const newIndex = changeOrderEvent.moved.newIndex + 1
+        await this.service.changeOrder({
+            newOrderNumber: newIndex,
+            oldOrderNumber: oldIndex,
+            checklistId: this.checklistId
+        })
     }
 }
 </script>
@@ -152,6 +166,7 @@ export default class TasksIndex extends Vue {
 .completed {
     text-decoration: line-through;
 }
+
 .handle {
     float: left;
     padding-top: 8px;
