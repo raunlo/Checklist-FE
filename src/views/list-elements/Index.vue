@@ -44,7 +44,7 @@
                 <th></th>
             </tr>
             </thead>
-            <div v-if="items == null">
+            <div v-if="!items">
                 <br/>
                 <div class="spinner-border text-secondary" role="status">
                     <span class="sr-only">Loading...</span>
@@ -110,7 +110,15 @@ export default class TasksIndex extends Vue {
             completed: !item.completed,
         };
 
-        await this.service.update(this.checklistId, objToSave)
+        this.service.update(this.checklistId, objToSave)
+            .catch(() => {
+                this.items = this.items?.map(task =>
+                    ({
+                        ...task,
+                        completed: task.id === item.id ? !task.completed : task.completed
+                    })
+                ) ?? []
+            })
     }
 
     async deleteClicked(id: number): Promise<void> {
@@ -130,7 +138,7 @@ export default class TasksIndex extends Vue {
     async getAllTasks(): Promise<void> {
         this.service.getAll(this.checklistId)
             .then((result: FetchResponse<Task[]>) => {
-                this.items = result.data!;
+                this.items = result.data ?? [];
             })
             .catch(() => {
                 this.items = [];
