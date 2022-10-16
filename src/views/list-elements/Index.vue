@@ -50,10 +50,11 @@
                     <span class="sr-only">Loading...</span>
                 </div>
             </div>
-            <draggable v-model="items" tag="tbody" item-key="id" @change="changeOrder($event)">
+            <draggable v-model="items" tag="tbody" item-key="id" @change="changeOrder($event)" handle=".handle">
                 <template #item="{ element }">
                     <tr v-bind:class="{completed: element.completed}">
                         <td>
+                            <i class="fa fa-align-justify handle"></i>
                             <input
                                 v-model="element.completed"
                                 class="custom-checkbox"
@@ -176,8 +177,8 @@ export default class TasksIndex extends Vue {
 }
 
 .handle {
-    float: left;
     padding-top: 8px;
-    padding-bottom: 20px;
+    padding-bottom: 8px;
+    margin-right: 1em;
 }
 </style>
