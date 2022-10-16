@@ -151,11 +151,11 @@ export default class TasksIndex extends Vue {
     }
 
     async changeOrder(changeOrderEvent: any): Promise<void> {
-        const oldIndex = changeOrderEvent.moved.oldIndex + 1
+        const taskId = changeOrderEvent.moved.element.id
         const newIndex = changeOrderEvent.moved.newIndex + 1
         await this.service.changeOrder({
             newOrderNumber: newIndex,
-            oldOrderNumber: oldIndex,
+            taskId,
             checklistId: this.checklistId
         })
     }
