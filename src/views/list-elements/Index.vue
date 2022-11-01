@@ -29,7 +29,7 @@
                     >&nbsp;
                     <button
                         class="btn btn-outline-dark btn-sm"
-                        @click="filterButtonClicked('&completed=false')"
+                        @click="getOnlyTodoItems = !getOnlyTodoItems; getAllTasks();"
                     >
                         Uncompleted
                     </button
@@ -100,6 +100,7 @@ import draggable from 'vuedraggable'
 })
 export default class TasksIndex extends Vue {
     items: Task[] | null = null
+    getOnlyTodoItems: boolean = false
     checklistId: number = Number(useRoute().params.checklistId)
     service: TaskService = inject(TaskServiceName) as TaskService
     createTaskRoute: any = getChecklistTaskDetailsRoute(this.checklistId)
@@ -137,7 +138,7 @@ export default class TasksIndex extends Vue {
     }
 
     async getAllTasks(): Promise<void> {
-        this.service.getAll(this.checklistId)
+        this.service.getAll(this.checklistId, this.getOnlyTodoItems)
             .then((result: FetchResponse<Task[]>) => {
                 this.items = result.data ?? [];
             })

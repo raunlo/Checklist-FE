@@ -9,8 +9,8 @@ export class TaskService {
     constructor(private basePath: string) {
     }
 
-    async getAll(checklistId: number): Promise<FetchResponse<Task[]>> {
-        const response = await axios.get(`${this.basePath}/v1/checklist/${checklistId}/task`, { headers: ApplicationJsonHeaders });
+    async getAll(checklistId: number, completed: boolean): Promise<FetchResponse<Task[]>> {
+        const response = await axios.get(`${this.basePath}/v1/checklist/${checklistId}/task${completed ? '/todo' : ''}`, { headers: ApplicationJsonHeaders });
         if (response.status >= 200 && response.status < 300) {
             return {
                 statusCode: response.status,
