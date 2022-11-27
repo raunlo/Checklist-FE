@@ -22,21 +22,16 @@
                 <th class="alignright">
                     <button
                         class="btn btn-outline-dark btn-sm"
-                        @click="filterButtonClicked('')"
-                    >
-                        All
-                    </button
-                    >&nbsp;
-                    <button
-                        class="btn btn-outline-dark btn-sm"
-                        @click="getOnlyTodoItems = !getOnlyTodoItems; getAllTasks();"
+                        :class="filter === FilterType.TODO && 'active'"
+                        @click="addFilterAndQueryTasks(FilterType.TODO)"
                     >
                         Uncompleted
                     </button
                     >&nbsp;
                     <button
                         class="btn btn-outline-dark btn-sm"
-                        @click="filterButtonClicked('&completed=true')"
+                        :class="filter === FilterType.COMPLETED && 'active'"
+                        @click="addFilterAndQueryTasks(FilterType.COMPLETED)"
                     >
                         Completed
                     </button>
@@ -94,13 +89,17 @@ import { FetchResponse } from "@/types/FetchResponse";
 import { RouteLocationRaw, useRoute } from "vue-router";
 import { getChecklistTaskDetailsRoute } from "@/router";
 import draggable from 'vuedraggable'
+import { FilterType } from "@/domain/filter-type";
 
 @Options({
     components: { draggable },
 })
 export default class TasksIndex extends Vue {
+    // import for vue
+    FilterType = FilterType
+
     items: Task[] | null = null
-    getOnlyTodoItems: boolean = false
+    filter: FilterType = FilterType.NONE
     checklistId: number = Number(useRoute().params.checklistId)
     service: TaskService = inject(TaskServiceName) as TaskService
     createTaskRoute: any = getChecklistTaskDetailsRoute(this.checklistId)
@@ -138,13 +137,24 @@ export default class TasksIndex extends Vue {
     }
 
     async getAllTasks(): Promise<void> {
-        this.service.getAll(this.checklistId, this.getOnlyTodoItems)
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.service.getAll(this.checklistId, this.filter!)
             .then((result: FetchResponse<Task[]>) => {
                 this.items = result.data ?? [];
             })
             .catch(() => {
                 this.items = [];
             });
+    }
+
+    async addFilterAndQueryTasks(filter: FilterType): Promise<void> {
+        console.log(filter)
+        if (this.filter === filter) {
+            this.filter = FilterType.NONE
+        } else {
+            this.filter = filter
+        }
+        await this.getAllTasks()
     }
 
     beforeUnmount(): void {

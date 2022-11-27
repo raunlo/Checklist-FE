@@ -1,6 +1,7 @@
 import { Task } from "@/domain/task";
 import { FetchResponse } from "@/types/FetchResponse";
 import axios from "axios";
+import { FilterType } from "@/domain/filter-type";
 import { ApplicationJsonHeaders } from "@/constants/service-constants";
 import { ChangeOrderRequestPayload } from "@/domain/change-order-request-payload";
 
@@ -9,8 +10,9 @@ export class TaskService {
     constructor(private basePath: string) {
     }
 
-    async getAll(checklistId: number, completed: boolean): Promise<FetchResponse<Task[]>> {
-        const response = await axios.get(`${this.basePath}/v1/checklist/${checklistId}/task${completed ? '/todo' : ''}`, { headers: ApplicationJsonHeaders });
+    async getAll(checklistId: number, taskFilter: FilterType): Promise<FetchResponse<Task[]>> {
+        const response = await axios.get(`${this.basePath}/v1/checklist/${checklistId}/task${(taskFilter !== FilterType.NONE) ? '?filterType=' + taskFilter : ""}`,
+            { headers: ApplicationJsonHeaders });
         if (response.status >= 200 && response.status < 300) {
             return {
                 statusCode: response.status,
