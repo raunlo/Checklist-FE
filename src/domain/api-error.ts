@@ -1,5 +1,5 @@
 export interface ErrorPayload {
-    message: string,
+    reason: string,
     errorCode: string
 }
 

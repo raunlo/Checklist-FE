@@ -80,7 +80,7 @@ export default class TaskCreate extends Vue {
             this.$router.push(getChecklistTasksRoute(this.checklistId!))
         })
             .catch((apiError: ApiError) => {
-                this.error = apiError.getError().message
+                this.error = apiError.getError().reason
             })
     }
 
