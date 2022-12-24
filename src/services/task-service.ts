@@ -4,6 +4,7 @@ import axios from "axios";
 import { FilterType } from "@/domain/filter-type";
 import { ApplicationJsonHeaders } from "@/constants/service-constants";
 import { ChangeOrderRequestPayload } from "@/domain/change-order-request-payload";
+import {ApiError, ErrorPayload} from "@/domain/api-error";
 
 export class TaskService {
     // eslint-disable-next-line no-useless-constructor
@@ -68,30 +69,18 @@ export class TaskService {
                 data: response.data as Task
             };
         }
-        throw new Error(JSON.stringify({
-            statusCode: response.status,
-            errorMessage: response.statusText,
-        }));
+        throw new ApiError(response.data as ErrorPayload)
     }
 
     async post(checklistId: number, task: Task): Promise<FetchResponse<Task>> {
-        try {
-            const response = await axios.post(`${this.basePath}/v1/checklist/${checklistId}/task`, task, { headers: ApplicationJsonHeaders });
-            if (response.status >= 200 && response.status < 300) {
-                return {
-                    statusCode: response.status,
-                    data: response.data as Task
-                };
-            }
+        const response = await axios.post(`${this.basePath}/v1/checklist/${checklistId}/task`, task, {headers: ApplicationJsonHeaders});
+        if (response.status >= 200 && response.status < 300) {
             return {
                 statusCode: response.status,
-                errorMessage: response.statusText,
+                data: response.data as Task
             };
-        } catch (reason) {
-            return {
-                statusCode: 500,
-                errorMessage: JSON.stringify(reason),
-            };
+        } else {
+            throw new ApiError(response.data as ErrorPayload)
         }
     }
 

@@ -4,6 +4,7 @@
         <div className="col-sm-10 col-md-6">
             <h1>Create</h1>
             <h4>List item</h4>
+            <span style="color:red"> {{error}}</span>
             <hr />
             <div class="form-group">
                 <label class="control-label" for="description"
@@ -51,12 +52,15 @@ import { TaskService } from "@/services/task-service";
 import { inject } from "vue";
 import { TaskServiceName } from "@/constants/service-constants";
 import { getChecklistTasksRoute } from "@/router";
+import { ApiError } from "@/domain/api-error";
 
 export default class TaskCreate extends Vue {
     task: Task = {
         name: "",
         completed: false
     }
+
+    error: string = ""
 
     taskId : number = 0;
 
@@ -75,6 +79,9 @@ export default class TaskCreate extends Vue {
         return taskPromise.then(() => {
             this.$router.push(getChecklistTasksRoute(this.checklistId!))
         })
+            .catch((apiError: ApiError) => {
+                this.error = apiError.getError().message
+            })
     }
 
     mounted(): void {
