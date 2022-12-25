@@ -7,7 +7,7 @@ import { ChangeOrderRequestPayload } from "@/domain/change-order-request-payload
 import { ApiError, ErrorPayload } from "@/domain/api-error";
 
 const validationStatus = (status: number) => { return status >= 200 && status < 300 }
-const generalConfig = { headers: ApplicationJsonHeaders, validationStatus: validationStatus}
+const generalConfig = { headers: ApplicationJsonHeaders, validationStatus: validationStatus }
 
 export class TaskService {
     // eslint-disable-next-line no-useless-constructor
