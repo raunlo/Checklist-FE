@@ -7,6 +7,7 @@ import { ChangeOrderRequestPayload } from "@/domain/change-order-request-payload
 import { ApiError, ErrorPayload } from "@/domain/api-error";
 
 const validationStatus = (status: number) => { return status >= 200 && status < 300 }
+const generalConfig = { headers: ApplicationJsonHeaders, validationStatus: validationStatus}
 
 export class TaskService {
     // eslint-disable-next-line no-useless-constructor
@@ -15,7 +16,7 @@ export class TaskService {
 
     async getAll(checklistId: number, taskFilter: FilterType): Promise<FetchResponse<Task[]>> {
         const response = await axios.get(`${this.basePath}/v1/checklist/${checklistId}/task${(taskFilter !== FilterType.NONE) ? '?filterType=' + taskFilter : ""}`,
-            { headers: ApplicationJsonHeaders });
+            generalConfig);
         if (response.status >= 200 && response.status < 300) {
             return {
                 statusCode: response.status,
@@ -30,7 +31,7 @@ export class TaskService {
 
     async get(checklistId: number, taskId: number): Promise<FetchResponse<Task>> {
         try {
-            const response = await axios.get(`${this.basePath}/v1/checklist/${checklistId}/task/${taskId}`, { headers: ApplicationJsonHeaders });
+            const response = await axios.get(`${this.basePath}/v1/checklist/${checklistId}/task/${taskId}`, generalConfig);
             if (response.status >= 200 && response.status < 300) {
                 return {
                     statusCode: response.status,
@@ -50,7 +51,7 @@ export class TaskService {
     }
 
     async delete(checklistId: number, taskId: number): Promise<FetchResponse<void>> {
-        const response = await axios.delete(`${this.basePath}/v1/checklist/${checklistId}/task/${taskId}`, { headers: ApplicationJsonHeaders });
+        const response = await axios.delete(`${this.basePath}/v1/checklist/${checklistId}/task/${taskId}`, generalConfig);
         if (response.status >= 200 && response.status < 300) {
             return {
                 statusCode: response.status,
@@ -65,7 +66,7 @@ export class TaskService {
 
     async update(checklistId: number, task: Task): Promise<FetchResponse<Task>> {
         try {
-            const response = await axios.put(`${this.basePath}/v1/checklist/${checklistId}/task/${task.id}`, task, { headers: ApplicationJsonHeaders, validateStatus: validationStatus });
+            const response = await axios.put(`${this.basePath}/v1/checklist/${checklistId}/task/${task.id}`, task, generalConfig);
             return {
                 statusCode: response.status,
                 data: response.data as Task
@@ -80,7 +81,7 @@ export class TaskService {
 
     async post(checklistId: number, task: Task): Promise<FetchResponse<Task>> {
         try {
-            const response = await axios.post(`${this.basePath}/v1/checklist/${checklistId}/task`, task, { headers: ApplicationJsonHeaders, validateStatus: validationStatus });
+            const response = await axios.post(`${this.basePath}/v1/checklist/${checklistId}/task`, task, generalConfig);
             return {
                 statusCode: response.status,
                 data: response.data as Task
@@ -92,7 +93,7 @@ export class TaskService {
     }
 
     async changeOrder(requestPayload: ChangeOrderRequestPayload): Promise<FetchResponse<void>> {
-        const response = await axios.patch(`${this.basePath}/v1/checklist/${requestPayload.checklistId}/task/change-order`, requestPayload, { headers: ApplicationJsonHeaders });
+        const response = await axios.patch(`${this.basePath}/v1/checklist/${requestPayload.checklistId}/task/change-order`, requestPayload, generalConfig);
         if (response.status >= 200 && response.status < 300) {
             return {
                 statusCode: response.status,
@@ -106,7 +107,7 @@ export class TaskService {
     }
 
     async saveMultiple(tasks: Array<Task>, checklistId: number): Promise<FetchResponse<Array<Task>>> {
-        const response = await axios.post(`${this.basePath}/v1/checklist/${checklistId}/task/save-multiple`, tasks, { headers: ApplicationJsonHeaders })
+        const response = await axios.post(`${this.basePath}/v1/checklist/${checklistId}/task/save-multiple`, tasks, generalConfig)
         if (response.status >= 200 && response.status < 300) {
             return {
                 statusCode: response.status,
