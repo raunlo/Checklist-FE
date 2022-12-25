@@ -5,11 +5,7 @@ export interface ErrorPayload {
 
 export class ApiError extends Error {
     // eslint-disable-next-line handle-callback-err
-    constructor(private error: ErrorPayload) {
+    constructor(public error: ErrorPayload) {
         super();
-    }
-
-    getError(): ErrorPayload {
-        return this.error
     }
 }

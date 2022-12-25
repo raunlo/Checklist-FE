@@ -6,6 +6,8 @@ import { ApplicationJsonHeaders } from "@/constants/service-constants";
 import { ChangeOrderRequestPayload } from "@/domain/change-order-request-payload";
 import { ApiError, ErrorPayload } from "@/domain/api-error";
 
+const validationStatus = (status: number) => { return status >= 200 && status < 300 }
+
 export class TaskService {
     // eslint-disable-next-line no-useless-constructor
     constructor(private basePath: string) {
@@ -62,25 +64,30 @@ export class TaskService {
     }
 
     async update(checklistId: number, task: Task): Promise<FetchResponse<Task>> {
-        const response = await axios.put(`${this.basePath}/v1/checklist/${checklistId}/task/${task.id}`, task, { headers: ApplicationJsonHeaders });
-        if (response.status >= 200 && response.status < 300) {
+        try {
+            const response = await axios.put(`${this.basePath}/v1/checklist/${checklistId}/task/${task.id}`, task, { headers: ApplicationJsonHeaders, validateStatus: validationStatus });
             return {
                 statusCode: response.status,
                 data: response.data as Task
             };
+        } catch (error) {
+            if (!(error instanceof ApiError)) {
+                throw new ApiError(error.response.data as ErrorPayload)
+            }
+            throw error
         }
-        throw new ApiError(response.data as ErrorPayload)
     }
 
     async post(checklistId: number, task: Task): Promise<FetchResponse<Task>> {
-        const response = await axios.post(`${this.basePath}/v1/checklist/${checklistId}/task`, task, { headers: ApplicationJsonHeaders });
-        if (response.status >= 200 && response.status < 300) {
+        try {
+            const response = await axios.post(`${this.basePath}/v1/checklist/${checklistId}/task`, task, { headers: ApplicationJsonHeaders, validateStatus: validationStatus });
             return {
                 statusCode: response.status,
                 data: response.data as Task
             };
-        } else {
-            throw new ApiError(response.data as ErrorPayload)
+        } catch (error) {
+            console.log(error)
+            throw new ApiError(error.response.data as ErrorPayload)
         }
     }
 
