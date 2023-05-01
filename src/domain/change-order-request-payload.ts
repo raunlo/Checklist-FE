@@ -1,5 +1,5 @@
 export interface ChangeOrderRequestPayload {
-    taskId: number;
+    checklistItemId: number;
     newOrderNumber: number;
     checklistId: number;
 }

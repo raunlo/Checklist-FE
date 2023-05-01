@@ -166,7 +166,7 @@ export default class TasksIndex extends Vue {
         const newIndex = changeOrderEvent.moved.newIndex + 1
         await this.service.changeOrder({
             newOrderNumber: newIndex,
-            taskId,
+            checklistItemId: taskId,
             checklistId: this.checklistId
         })
     }
